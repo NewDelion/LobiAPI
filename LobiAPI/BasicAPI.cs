@@ -82,6 +82,8 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<PrivateGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/groups?count=1000&page=1", header));
         }
 
+        
+
 
         private class Pattern
         {

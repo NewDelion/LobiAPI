@@ -49,8 +49,11 @@
     <Compile Include="Json\Group.cs" />
     <Compile Include="Json\GroupCan.cs" />
     <Compile Include="Json\Me.cs" />
+    <Compile Include="Json\Notification.cs" />
+    <Compile Include="Json\Notifications.cs" />
     <Compile Include="Json\PrivateGroups.cs" />
     <Compile Include="Json\PublicGroups.cs" />
+    <Compile Include="Json\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
