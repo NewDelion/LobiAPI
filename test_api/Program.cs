@@ -19,6 +19,13 @@ namespace test_api
             api.Login(mail, password);
             LobiAPI.Json.Me me = api.GetMe();
             LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
+            LobiAPI.Json.PrivateGroups[] PrivateGroups = api.GetPrivateGroupList();
+            LobiAPI.Json.Notifications Notifications = api.GetNotifications();
+            LobiAPI.Json.Followers Followers = api.GetFollowers(me.uid);
+            LobiAPI.Json.Contacts Contacts = api.GetContacts(me.uid);
+            
+            
+            
             Console.ReadLine();
         }
     }

@@ -119,6 +119,7 @@ namespace LobiAPI
         }
 
 
+
         private class Pattern
         {
             public static string csrf_token = "<input type=\"hidden\" name=\"csrf_token\" value=\"";

@@ -8,7 +8,7 @@ namespace LobiAPI.Json
 {
     public class Followers
     {
-        public int visibility { get; set; }
+        public int? visibility { get; set; }
         public User[] users { get; set; }
     }
 }
