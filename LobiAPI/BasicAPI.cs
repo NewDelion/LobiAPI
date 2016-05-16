@@ -153,7 +153,7 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", header));
         }
 
-        public int GetPublicGroupMembersCount(string uid)
+        public int GetGroupMembersCount(string uid)
         {
             GetHeader header = new GetHeader()
                 .setHost("web.lobi.co")
@@ -166,7 +166,7 @@ namespace LobiAPI
             return result == null ? 0 : (int)result;
         }
 
-        public User[] GetPublicGroupMembers(string uid)
+        public User[] GetGroupMembers(string uid)
         {
             GetHeader header = new GetHeader()
                 .setHost("web.lobi.co")
