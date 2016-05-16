@@ -46,6 +46,8 @@
     <Compile Include="BasicAPI.cs" />
     <Compile Include="HttpAPI\Header\Header.cs" />
     <Compile Include="HttpAPI\Http.cs" />
+    <Compile Include="Json\Contacts.cs" />
+    <Compile Include="Json\Followers.cs" />
     <Compile Include="Json\Group.cs" />
     <Compile Include="Json\GroupCan.cs" />
     <Compile Include="Json\Me.cs" />

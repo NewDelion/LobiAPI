@@ -27,3 +27,8 @@ https://web.lobi.co/api/group/a5babead5099b687d25354a8c94ca81309b290e3/chats/unl
 ブー
 https://web.lobi.co/api/group/a5babead5099b687d25354a8c94ca81309b290e3/chats/boo
 https://web.lobi.co/api/group/a5babead5099b687d25354a8c94ca81309b290e3/chats/unboo
+
+フォローリスト
+https://web.lobi.co/api/user/402aeea6d30bfbce06f79b61f5776991e5c82e02/contacts
+フォロワーリスト
+https://web.lobi.co/api/user/402aeea6d30bfbce06f79b61f5776991e5c82e02/followers

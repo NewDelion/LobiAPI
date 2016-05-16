@@ -93,7 +93,30 @@ namespace LobiAPI
 
             return JsonConvert.DeserializeObject<Notifications>(this.NetworkAPI.get("https://web.lobi.co/api/info/notifications?platform=any&last_cursor=0", header));
         }
-        
+
+        public Contacts GetContacts(string uid)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<Contacts>(this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/contacts", header));
+        }
+
+        public Followers GetFollowers(string uid)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<Followers>(this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/followers", header));
+        }
 
 
         private class Pattern

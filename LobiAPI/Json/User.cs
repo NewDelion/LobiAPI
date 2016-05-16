@@ -14,5 +14,7 @@ namespace LobiAPI.Json
         public string icon { get; set; }
         public string name { get; set; }
         public string uid { get; set; }
+        public long followed_date { get; set; }
+        public long following_date { get; set; }
     }
 }

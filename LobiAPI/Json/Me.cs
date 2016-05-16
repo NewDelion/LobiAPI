@@ -11,7 +11,6 @@ namespace LobiAPI.Json
         public string contacted_date { get; set; }
         public int contacts_count { get; set; }
         public int followers_count { get; set; }
-        public string following_date { get; set; }
         public string lat { get; set; }
         public string lng { get; set; }
         public string located_date { get; set; }
