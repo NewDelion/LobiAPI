@@ -24,7 +24,7 @@ namespace test_api
             LobiAPI.Json.Followers Followers = api.GetFollowers(me.uid);
             LobiAPI.Json.Contacts Contacts = api.GetContacts(me.uid);
             LobiAPI.Json.Group Group = api.GetGroup(PublicGroups[0].items[0].uid);
-            LobiAPI.Json.User[] users = api.GetPublicGroupMembers(PublicGroups[0].items[0].uid);
+            LobiAPI.Json.User[] users = api.GetGroupMembers(PublicGroups[0].items[0].uid);
             LobiAPI.Json.Chat[] chats = api.GetThreads(PublicGroups[0].items[0].uid);
 
             
