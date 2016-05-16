@@ -202,6 +202,67 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<Chat[]>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), header));
         }
 
+        public void Goo(string group_id, string chat_id)
+        {
+            PostHeader header =new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            List<string> data = new List<string>();
+            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n"+chat_id);
+
+            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/like", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+        }
+        public void UnGoo(string group_id, string chat_id)
+        {
+            PostHeader header = new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            List<string> data = new List<string>();
+            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
+
+            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+        }
+        public void Boo(string group_id, string chat_id)
+        {
+            PostHeader header = new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            List<string> data = new List<string>();
+            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
+
+            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/boo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+        }
+
+        public void UnBoo(string group_id, string chat_id)
+        {
+            PostHeader header = new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            List<string> data = new List<string>();
+            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
+
+            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unboo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+        }
 
         private class Pattern
         {

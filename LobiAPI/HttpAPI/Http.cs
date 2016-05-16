@@ -116,7 +116,7 @@ namespace LobiAPI.HttpAPI
         {
             string post_data = "";
             foreach (string cdata in data)
-                post_data += "--" + boundary + "\n" + cdata + "\n";
+                post_data += "--" + boundary + "\r\n" + cdata + "\r\n";
             post_data += "--" + boundary + "--";
 
             byte[] data_bytes = Encoding.UTF8.GetBytes(post_data);

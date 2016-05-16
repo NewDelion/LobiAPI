@@ -26,7 +26,6 @@ namespace test_api
             LobiAPI.Json.Group Group = api.GetGroup(PublicGroups[0].items[0].uid);
             LobiAPI.Json.User[] users = api.GetGroupMembers(PublicGroups[0].items[0].uid);
             LobiAPI.Json.Chat[] chats = api.GetThreads(PublicGroups[0].items[0].uid);
-
             
             Console.ReadLine();
         }
