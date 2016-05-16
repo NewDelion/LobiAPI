@@ -328,6 +328,19 @@ namespace LobiAPI
             this.NetworkAPI.post_form_data("https://web.lobi.co/api/groups/1on1s", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"user\"\r\n\r\n" + user_id }, header);
         }
 
+        public void ChangeProfile(string name, string description)
+        {
+            PostHeader header = new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            this.NetworkAPI.post_form_data("https://web.lobi.co/api/me/profile", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"name\"\r\n\r\n" + name, "Content-Disposition: form-data; name=\"description\"\r\n\r\n" + description }, header);
+        }
+
         private class Pattern
         {
             public static string csrf_token = "<input type=\"hidden\" name=\"csrf_token\" value=\"";
