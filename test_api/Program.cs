@@ -12,11 +12,15 @@ namespace test_api
         static void Main(string[] args)
         {
             BasicAPI api = new BasicAPI();
-            Console.Write("Mail: ");
+login:      Console.Write("Mail: ");
             string mail = System.Net.WebUtility.UrlEncode(Console.ReadLine());
             Console.Write("Password: ");
             string password = System.Net.WebUtility.UrlEncode(Console.ReadLine());
-            api.Login(mail, password);
+            if (!api.Login(mail, password))
+            {
+                Console.WriteLine("ログインに失敗しました。");
+                goto login;
+            }
             LobiAPI.Json.Me me = api.GetMe();
             LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
             LobiAPI.Json.PrivateGroups[] PrivateGroups = api.GetPrivateGroupList();

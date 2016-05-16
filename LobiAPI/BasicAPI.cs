@@ -21,7 +21,7 @@ namespace LobiAPI
             this.NetworkAPI = new Http();
         }
 
-        public void Login(string mail, string password)
+        public bool Login(string mail, string password)
         {
             GetHeader header1 = new GetHeader()
                 .setHost("lobi.co")
@@ -43,7 +43,8 @@ namespace LobiAPI
                 .setOrigin("https://lobi.co")
                 .setReferer("https://lobi.co/signin");
 
-            this.NetworkAPI.post_x_www_form_urlencoded("https://lobi.co/signin", post_data, header2);
+            return this.NetworkAPI.post_x_www_form_urlencoded("https://lobi.co/signin", post_data, header2).IndexOf("ログインに失敗しました") == -1;
+
         }
 
         public Me GetMe()
@@ -217,6 +218,7 @@ namespace LobiAPI
 
             Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/like", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
         }
+
         public void UnGoo(string group_id, string chat_id)
         {
             PostHeader header = new PostHeader()
@@ -232,6 +234,7 @@ namespace LobiAPI
 
             Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
         }
+
         public void Boo(string group_id, string chat_id)
         {
             PostHeader header = new PostHeader()
