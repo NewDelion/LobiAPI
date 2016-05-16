@@ -46,6 +46,8 @@
     <Compile Include="BasicAPI.cs" />
     <Compile Include="HttpAPI\Header\Header.cs" />
     <Compile Include="HttpAPI\Http.cs" />
+    <Compile Include="Json\Asset.cs" />
+    <Compile Include="Json\Chat.cs" />
     <Compile Include="Json\Contacts.cs" />
     <Compile Include="Json\Followers.cs" />
     <Compile Include="Json\Group.cs" />
@@ -55,6 +57,7 @@
     <Compile Include="Json\Notifications.cs" />
     <Compile Include="Json\PrivateGroups.cs" />
     <Compile Include="Json\PublicGroups.cs" />
+    <Compile Include="Json\Reply.cs" />
     <Compile Include="Json\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

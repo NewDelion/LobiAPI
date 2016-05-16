@@ -12,6 +12,9 @@ namespace LobiAPI.Json
         public int? @default { get; set; }
         public string description { get; set; }
         public string icon { get; set; }
+        public string lat { get; set; }
+        public string lng { get; set; }
+        public string located_date { get; set; }
         public string name { get; set; }
         public string uid { get; set; }
         public long? followed_date { get; set; }

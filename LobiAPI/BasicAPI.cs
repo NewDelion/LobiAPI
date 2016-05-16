@@ -67,7 +67,19 @@ namespace LobiAPI
                 .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
                 .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
 
-            return JsonConvert.DeserializeObject<PublicGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/public_groups?count=1000&page=1&with_archived=1", header));
+            List<PublicGroups> result = new List<PublicGroups>();
+
+            int index = 1;
+            while (true)
+            {
+                PublicGroups[] pg = JsonConvert.DeserializeObject<PublicGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/public_groups?count=1000&page=" + index.ToString() + "&with_archived=1", header));
+                index++;
+                if (pg[0].items.Length == 0)
+                    break;
+                result.AddRange(pg);
+            }
+
+            return result.ToArray();
         }
 
         public PrivateGroups[] GetPrivateGroupList()
@@ -79,7 +91,18 @@ namespace LobiAPI
                 .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
                 .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
 
-            return JsonConvert.DeserializeObject<PrivateGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/groups?count=1000&page=1", header));
+            List<PrivateGroups> result = new List<PrivateGroups>();
+            int index = 1;
+            while (true)
+            {
+                PrivateGroups[] pg = JsonConvert.DeserializeObject<PrivateGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/groups?count=1000&page=" + index.ToString(), header));
+                index++;
+                if (pg[0].items.Length == 0)
+                    break;
+                result.AddRange(pg);
+            }
+
+            return result.ToArray();
         }
 
         public Notifications GetNotifications()
@@ -118,6 +141,66 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<Followers>(this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/followers", header));
         }
 
+        public Group GetGroup(string uid)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", header));
+        }
+
+        public int GetPublicGroupMembersCount(string uid)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            int? result =JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/"+uid,header)).members_count;
+            return result == null ? 0 : (int)result;
+        }
+
+        public User[] GetPublicGroupMembers(string uid)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            List<User> result = new List<User>();
+            string next = "0";
+            int limit = 10000;
+            while (limit-- > 0)
+            {
+                Group g = JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?members_cursor=" + next, header));
+                result.AddRange(g.members);
+                if (g.members_next_cursor == 0)
+                    break;
+                next = g.members_next_cursor.ToString();
+            }
+
+            return result.ToArray();
+        }
+
+        public Chat[] GetThreads(string uid, int count = 20)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<Chat[]>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), header));
+        }
 
 
         private class Pattern
