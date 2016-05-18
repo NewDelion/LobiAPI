@@ -32,3 +32,26 @@ https://web.lobi.co/api/group/a5babead5099b687d25354a8c94ca81309b290e3/chats/unb
 https://web.lobi.co/api/user/402aeea6d30bfbce06f79b61f5776991e5c82e02/contacts
 フォロワーリスト
 https://web.lobi.co/api/user/402aeea6d30bfbce06f79b61f5776991e5c82e02/followers
+
+
+
+********* Twitter認証メモ *********
+
+ここにアクセスするとapi.twitter.comに転送される
+https://lobi.co/signup/twitter
+
+ここに転送される。メールとパスワードの入力フォームがある
+https://api.twitter.com/oauth/authorize?oauth_token=トークン
+
+フォームに入力してここに送信する。「アプリケーションに戻ります」の画面。もちろん待つ必要はない。
+「自動的に移動しない場合は」のところのURLにアクセスする
+https://api.twitter.com/oauth/authorize
+
+これがそのURL
+https://lobi.co/signup/twitter/oauth_callback?oauth_token=トークン&oauth_verifier=整合性を確かめる何かかな
+
+上のURLにアクセスするとweb.lobi.coに転送されてログイン完了となる
+
+
+https://api.twitter.com/oauth/authorize にメールアドレスとパスワードを送信してみてこのURLに転送されたらログイン失敗
+https://twitter.com/login/error_options?～～～
