@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 using LobiAPI.HttpAPI;
 using LobiAPI.HttpAPI.Header;
@@ -45,6 +46,36 @@ namespace LobiAPI
 
             return this.NetworkAPI.post_x_www_form_urlencoded("https://lobi.co/signin", post_data, header2).IndexOf("ログインに失敗しました") == -1;
 
+        }
+
+        public bool TwitterLogin(string mail, string password)
+        {
+            GetHeader header1 = new GetHeader()
+                .setHost("lobi.co")
+                .setConnection(true)
+                .setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            string source = this.NetworkAPI.get("https://lobi.co/signup/twitter", header1);
+            string authenticity_token = Pattern.get_string(source, Pattern.authenticity_token, "\"");
+            string redirect_after_login = Pattern.get_string(source, Pattern.redirect_after_login, "\"");
+            string oauth_token = Pattern.get_string(source, Pattern.oauth_token, "\"");
+
+            string post_data = string.Format("authenticity_token={0}&redirect_after_login={1}&oauth_token={2}&session%5Busername_or_email%5D={3}&session%5Bpassword%5D={4}", authenticity_token, WebUtility.UrlEncode(redirect_after_login), oauth_token, mail, password);
+            PostHeader header2 = new PostHeader()
+                .setHost("api.twitter.com")
+                .setConnection(true)
+                .setAccept("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6")
+                .setOrigin("https://api.twitter.com");
+
+            string source2 = this.NetworkAPI.post_x_www_form_urlencoded("https://api.twitter.com/oauth/authorize", post_data, header2);
+            if (source2.IndexOf("Twitterにログイン") > -1)
+                return false;
+
+            return this.NetworkAPI.get(Pattern.get_string(source2, Pattern.twitter_redirect_to_lobi, "\""), header1).IndexOf("ログインに失敗しました") == -1;
         }
 
         public Me GetMe()
@@ -347,6 +378,10 @@ namespace LobiAPI
         private class Pattern
         {
             public static string csrf_token = "<input type=\"hidden\" name=\"csrf_token\" value=\"";
+            public static string authenticity_token = "<input name=\"authenticity_token\" type=\"hidden\" value=\"";
+            public static string redirect_after_login = "<input name=\"redirect_after_login\" type=\"hidden\" value=\"";
+            public static string oauth_token = "<input id=\"oauth_token\" name=\"oauth_token\" type=\"hidden\" value=\"";
+            public static string twitter_redirect_to_lobi = "<a class=\"maintain-context\" href=\"";
             public static string get_string(string source, string pattern, string end_pattern)
             {
                 int start = source.IndexOf(pattern) + pattern.Length;

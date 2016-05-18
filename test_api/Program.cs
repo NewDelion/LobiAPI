@@ -16,7 +16,7 @@ login:      Console.Write("Mail: ");
             string mail = System.Net.WebUtility.UrlEncode(Console.ReadLine());
             Console.Write("Password: ");
             string password = System.Net.WebUtility.UrlEncode(Console.ReadLine());
-            if (!api.Login(mail, password))
+            if (!api.TwitterLogin(mail, password))
             {
                 Console.WriteLine("ログインに失敗しました。");
                 goto login;
