@@ -234,6 +234,18 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<Chat[]>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), header));
         }
 
+        public Pokes GetPokes(string group_id, string chat_id)
+        {
+            GetHeader header = new GetHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<Pokes>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + group_id + "/chats/pokes?id=" + chat_id, header));
+        }
+
         public void Goo(string group_id, string chat_id)
         {
             PostHeader header =new PostHeader()

@@ -16,20 +16,21 @@ login:      Console.Write("Mail: ");
             string mail = System.Net.WebUtility.UrlEncode(Console.ReadLine());
             Console.Write("Password: ");
             string password = System.Net.WebUtility.UrlEncode(Console.ReadLine());
-            if (!api.TwitterLogin(mail, password))
+            if (!api.Login(mail, password))
             {
                 Console.WriteLine("ログインに失敗しました。");
                 goto login;
             }
+
             LobiAPI.Json.Me me = api.GetMe();
-            LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
+            /*LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
             LobiAPI.Json.PrivateGroups[] PrivateGroups = api.GetPrivateGroupList();
             LobiAPI.Json.Notifications Notifications = api.GetNotifications();
             LobiAPI.Json.Followers Followers = api.GetFollowers(me.uid);
             LobiAPI.Json.Contacts Contacts = api.GetContacts(me.uid);
             LobiAPI.Json.Group Group = api.GetGroup(PublicGroups[0].items[0].uid);
             LobiAPI.Json.User[] users = api.GetGroupMembers(PublicGroups[0].items[0].uid);
-            LobiAPI.Json.Chat[] chats = api.GetThreads(PublicGroups[0].items[0].uid);
+            LobiAPI.Json.Chat[] chats = api.GetThreads(PublicGroups[0].items[0].uid);*/
             
             Console.ReadLine();
         }
