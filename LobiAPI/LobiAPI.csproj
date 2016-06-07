@@ -47,6 +47,7 @@
     <Compile Include="HttpAPI\Header\Header.cs" />
     <Compile Include="HttpAPI\Http.cs" />
     <Compile Include="Json\Asset.cs" />
+    <Compile Include="Json\Bookmarks.cs" />
     <Compile Include="Json\Chat.cs" />
     <Compile Include="Json\Contacts.cs" />
     <Compile Include="Json\Followers.cs" />
