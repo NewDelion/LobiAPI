@@ -13,9 +13,15 @@ namespace LobiAPI.Json
         public int? followers_count { get; set; }
         public int? my_groups_count { get; set; }
         public int? premium { get; set; }
-        public Group[] public_groups { get; set; }
+        public MePublicGroupsItem[] public_groups { get; set; }
         public string public_groups_next_cursor { get; set; }
         public object[] uesrs { get; set; }
         public int? users_next_cursor { get; set; }
+    }
+
+    public class MePublicGroupsItem
+    {
+        public int? visibility { get; set; }
+        public Group group { get; set; }
     }
 }
