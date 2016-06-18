@@ -345,7 +345,7 @@ namespace LobiAPI
             this.NetworkAPI.post_form_data("https://web.lobi.co/api/me/contacts/remove", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"users\"\r\n\r\n" + user_id }, header);
         }
 
-        public void MakeThread(string group_id, string message)
+        public void MakeThread(string group_id, string message, bool shout = false)
         {
             PostHeader header = new PostHeader()
                 .setHost("web.lobi.co")
@@ -356,7 +356,7 @@ namespace LobiAPI
                 .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
 
 
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"type\"\r\n\r\nnormal", "Content-Disposition: form-data; name=\"lang\"\r\n\r\nja", "Content-Disposition: form-data; name=\"message\"\r\n\r\n" + message }, header);
+            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"type\"\r\n\r\n" + (shout ? "shout" : "normal"), "Content-Disposition: form-data; name=\"lang\"\r\n\r\nja", "Content-Disposition: form-data; name=\"message\"\r\n\r\n" + message }, header);
         }
 
         public void Reply(string group_id, string thread_id, string message)
