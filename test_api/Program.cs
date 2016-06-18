@@ -23,7 +23,6 @@ login:      Console.Write("Mail: ");
             }
 
             LobiAPI.Json.Me me = api.GetMe();
-            LobiAPI.Json.Bookmarks bookmarks = api.GetBookmarks();
             /*LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
             LobiAPI.Json.PrivateGroups[] PrivateGroups = api.GetPrivateGroupList();
             LobiAPI.Json.Notifications Notifications = api.GetNotifications();

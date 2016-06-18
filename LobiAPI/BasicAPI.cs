@@ -271,7 +271,7 @@ namespace LobiAPI
             List<string> data = new List<string>();
             data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n"+chat_id);
 
-            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/like", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/like", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header);
         }
 
         public void UnGoo(string group_id, string chat_id)
@@ -287,7 +287,7 @@ namespace LobiAPI
             List<string> data = new List<string>();
             data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
 
-            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header);
         }
 
         public void Boo(string group_id, string chat_id)
@@ -303,7 +303,7 @@ namespace LobiAPI
             List<string> data = new List<string>();
             data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
 
-            Console.Write(this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/boo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header));
+            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/boo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, header);
         }
 
         public void UnBoo(string group_id, string chat_id)
@@ -373,7 +373,7 @@ namespace LobiAPI
             this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"type\"\r\n\r\nnormal", "Content-Disposition: form-data; name=\"lang\"\r\n\r\nja", "Content-Disposition: form-data; name=\"message\"\r\n\r\n" + message, "Content-Disposition: form-data; name=\"reply_to\"\r\n\r\n" + thread_id }, header);
         }
 
-        public void MakePrivateGroup(string user_id)
+        public void RemoveGroup(string group_id)
         {
             PostHeader header = new PostHeader()
                 .setHost("web.lobi.co")
@@ -383,7 +383,20 @@ namespace LobiAPI
                 .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
                 .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
 
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/groups/1on1s", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"user\"\r\n\r\n" + user_id }, header);
+            this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/remove", "", header);
+        }
+
+        public MakePrivateGroupResult MakePrivateGroup(string user_id)
+        {
+            PostHeader header = new PostHeader()
+                .setHost("web.lobi.co")
+                .setConnection(true)
+                .setAccept("application/json, text/plain, */*")
+                .setOrigin("https://web.lobi.co")
+                .setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36")
+                .setAcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            return JsonConvert.DeserializeObject<MakePrivateGroupResult>(this.NetworkAPI.post_form_data("https://web.lobi.co/api/groups/1on1s", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"user\"\r\n\r\n" + user_id }, header));
         }
 
         public void ChangeProfile(string name, string description)

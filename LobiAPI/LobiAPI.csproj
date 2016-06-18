@@ -53,6 +53,7 @@
     <Compile Include="Json\Followers.cs" />
     <Compile Include="Json\Group.cs" />
     <Compile Include="Json\GroupCan.cs" />
+    <Compile Include="Json\MakePrivateGroupResult.cs" />
     <Compile Include="Json\Me.cs" />
     <Compile Include="Json\Notification.cs" />
     <Compile Include="Json\Notifications.cs" />
