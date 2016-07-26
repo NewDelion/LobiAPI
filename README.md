@@ -3,7 +3,7 @@ LobiのAPIにメールアドレスとパスワードのみでアクセス可能�
 
 # masterからの変更点(予定も含む)
 - HttpWebRequest,HttpWebResponseからHttpClientに変更
-- BasicHeaderの削除
+- BasicHeaderの削除。HttpClient用に修正
 - メソッドで使用するヘッダを共通のオブジェクトにまとめる
 - 一部、例外処理を追加
 
