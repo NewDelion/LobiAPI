@@ -1,5 +1,11 @@
 # LobiAPI
-LobiにプログラムからアクセスするためのAPI
+LobiのAPIにメールアドレスとパスワードのみでアクセス可能にするライブラリ
+
+# masterからの変更点(予定も含む)
+- HttpWebRequest,HttpWebResponseからHttpClientに変更
+- BasicHeaderの削除
+- メソッドで使用するヘッダを共通のオブジェクトにまとめる
+- 一部、例外処理を追加
 
 ## APIの機能一覧
 - ログイン
