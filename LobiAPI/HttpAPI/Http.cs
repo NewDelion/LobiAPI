@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.WebSockets;
 using System.Net;
+using System.Net.Http;
 using System.IO;
 
 using LobiAPI.HttpAPI.Header;
@@ -15,140 +15,61 @@ namespace LobiAPI.HttpAPI
     {
         public CookieContainer cookie = new CookieContainer();
 
-        public string get(string url, GetHeader header)
-        {
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "GET";
-            if (header.Host != "")
-                req.Host = header.Host;
-            req.KeepAlive = header.Connection;
-            if (header.Accept != "")
-                req.Accept = header.Accept;
-            if (header.UserAgent != "")
-                req.UserAgent = header.UserAgent;
-            if (header.Referer != "")
-                req.Referer = header.Referer;
-            if (header.AcceptEncoding != "")
-                req.Headers.Add("Accept-Encoding", header.AcceptEncoding);
-            if (header.AcceptLanguage != "")
-                req.Headers.Add("Accept-Language", header.AcceptLanguage);
-            req.CookieContainer = this.cookie;
-
+        public async Task<string> get(string url, HttpRequestHeaders header){
             string result = "";
-            using (HttpWebResponse res = (HttpWebResponse)req.GetResponse())
-            {
-                using (StreamReader reader = new StreamReader(res.GetResponseStream(), Encoding.UTF8))
-                    result = reader.ReadToEnd();
+            using(HttpClientHandler handler = new HttpClientHandler())
+            using(HttpClient client = new HttpClient()){
+                if(header.Host != "")
+                    client.DefaultRequestHeaders.Host = header.Host;
+                if(header.Accept.Count > 0)
+                    foreach(var accept in header.Accept)
+                        client.DefaultRequestHeaders.Accept.Add(accept);
+                if(header.UserAgent.Count > 0)
+                    foreach(var useragent in header.UserAgent)
+                        client.DefaultRequestHeaders.UserAgent.Add(useragent);
+                if(header.Referer != null)
+                    client.DefaultRequestHeaders.Referer = header.Referer;
+                if(header.AcceptEncoding.Count > 0)
+                    foreach(var encoding in header.AcceptEncoding)
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(encoding);
+                if(header.AcceptLanguage.Count > 0)
+                    foreach(var lang in header.AcceptLanguage)
+                        client.DefaultRequestHeaders.AcceptLanguage.Add(lang);
+                handler.CookieContainer = this.cookie;
+                var response = await client.GetAsync(url);
+                if(response.StatusCode == HttpStatusCode.OK){
+                    result = await response.Content.ReadAsStringAsync();
+                }
             }
-
             return result;
         }
-        public string post(string url, PostHeader header, string data)
+        public async Task<string> post_x_www_form_urlencoded(string url, FormUrlEncodedContent content, HttpRequestHeaders header)
         {
-            byte[] data_bytes = Encoding.UTF8.GetBytes(data);
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "POST";
-            if (header.Host != "")
-                req.Host = header.Host;
-            req.KeepAlive = header.Connection;
-            if (header.Accept != "")
-                req.Accept = header.Accept;
-            if (header.Origin != "")
-                req.Headers.Add("Origin", header.Origin);
-            if (header.UserAgent != "")
-                req.UserAgent = header.UserAgent;
-            if (header.ContentType != "")
-                req.ContentType = header.ContentType;
-            if (header.Referer != "")
-                req.Referer = header.Referer;
-            if (header.AcceptEncoding != "")
-                req.Headers.Add("Accept-Encoding", header.AcceptEncoding);
-            if (header.AcceptLanguage != "")
-                req.Headers.Add("Accept-Language", header.AcceptLanguage);
-            req.CookieContainer = this.cookie;
-            using (Stream stream = req.GetRequestStream())
-                stream.Write(data_bytes, 0, data_bytes.Length);
-
             string result = "";
-            using (HttpWebResponse res = (HttpWebResponse)req.GetResponse())
-            {
-                using (StreamReader reader = new StreamReader(res.GetResponseStream(), Encoding.UTF8))
-                    result = reader.ReadToEnd();
+            using(HttpClientHandler handler = new HttpClientHandler())
+            using(HttpClient client = new HttpClient()){
+                if(header.Host != "")
+                    client.DefaultRequestHeaders.Host = header.Host;
+                if(header.Accept.Count > 0)
+                    foreach(var accept in header.Accept)
+                        client.DefaultRequestHeaders.Accept.Add(accept);
+                if(header.UserAgent.Count > 0)
+                    foreach(var useragent in header.UserAgent)
+                        client.DefaultRequestHeaders.UserAgent.Add(useragent);
+                if(header.Referer != null)
+                    client.DefaultRequestHeaders.Referer = header.Referer;
+                if(header.AcceptEncoding.Count > 0)
+                    foreach(var encoding in header.AcceptEncoding)
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(encoding);
+                if(header.AcceptLanguage.Count > 0)
+                    foreach(var lang in header.AcceptLanguage)
+                        client.DefaultRequestHeaders.AcceptLanguage.Add(lang);
+                handler.CookieContainer = this.cookie;
+                var response = await client.PostAsync(url, content);
+                if(response.StatusCode == HttpStatusCode.OK){
+                    result = await response.Content.ReadAsStringAsync();
+                }
             }
-
-            return result;
-        }
-        public string post_x_www_form_urlencoded(string url, string data, PostHeader header)
-        {
-            byte[] data_bytes = Encoding.UTF8.GetBytes(data);
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "POST";
-            if (header.Host != "")
-                req.Host = header.Host;
-            req.KeepAlive = header.Connection;
-            if (header.Accept != "")
-                req.Accept = header.Accept;
-            if (header.Origin != "")
-                req.Headers.Add("Origin", header.Origin);
-            if (header.UserAgent != "")
-                req.UserAgent = header.UserAgent;
-            req.ContentType = "application/x-www-form-urlencoded";
-            if (header.Referer != "")
-                req.Referer = header.Referer;
-            if (header.AcceptEncoding != "")
-                req.Headers.Add("Accept-Encoding", header.AcceptEncoding);
-            if (header.AcceptLanguage != "")
-                req.Headers.Add("Accept-Language", header.AcceptLanguage);
-            req.CookieContainer = this.cookie;
-            using (Stream stream = req.GetRequestStream())
-                stream.Write(data_bytes, 0, data_bytes.Length);
-
-            string result = "";
-            using (HttpWebResponse res = (HttpWebResponse)req.GetResponse())
-            {
-                using (StreamReader reader = new StreamReader(res.GetResponseStream(), Encoding.UTF8))
-                    result = reader.ReadToEnd();
-            }
-
-            return result;
-        }
-        public string post_form_data(string url, string boundary, string[] data, PostHeader header)
-        {
-            string post_data = "";
-            foreach (string cdata in data)
-                post_data += "--" + boundary + "\r\n" + cdata + "\r\n";
-            post_data += "--" + boundary + "--";
-
-            byte[] data_bytes = Encoding.UTF8.GetBytes(post_data);
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            req.Method = "POST";
-            if (header.Host != "")
-                req.Host = header.Host;
-            req.KeepAlive = header.Connection;
-            if (header.Accept != "")
-                req.Accept = header.Accept;
-            if (header.Origin != "")
-                req.Headers.Add("Origin", header.Origin);
-            if (header.UserAgent != "")
-                req.UserAgent = header.UserAgent;
-            req.ContentType = "multipart/form-data; boundary=" + boundary;
-            if (header.Referer != "")
-                req.Referer = header.Referer;
-            if (header.AcceptEncoding != "")
-                req.Headers.Add("Accept-Encoding", header.AcceptEncoding);
-            if (header.AcceptLanguage != "")
-                req.Headers.Add("Accept-Language", header.AcceptLanguage);
-            req.CookieContainer = this.cookie;
-            using (Stream stream = req.GetRequestStream())
-                stream.Write(data_bytes, 0, data_bytes.Length);
-
-            string result = "";
-            using (HttpWebResponse res = (HttpWebResponse)req.GetResponse())
-            {
-                using (StreamReader reader = new StreamReader(res.GetResponseStream(), Encoding.UTF8))
-                    result = reader.ReadToEnd();
-            }
-
             return result;
         }
     }
