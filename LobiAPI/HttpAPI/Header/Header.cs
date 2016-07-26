@@ -6,59 +6,7 @@ using System.Threading.Tasks;
 
 namespace LobiAPI.HttpAPI.Header
 {
-    public class GetHeader
-    {
-        public string Host;
-        public bool Connection = true;
-        public string Accept;
-        public string UserAgent;
-        public string Referer;
-        public string AcceptEncoding;
-        public string AcceptLanguage;
-        public string Origin;
-        
-        public GetHeader setHost(string host)
-        {
-            this.Host = host;
-            return this;
-        }
-        public GetHeader setConnection(bool connection)
-        {
-            this.Connection = connection;
-            return this;
-        }
-        public GetHeader setAccept(string accept)
-        {
-            this.Accept = accept;
-            return this;
-        }
-        public GetHeader setUserAgent(string useragent)
-        {
-            this.UserAgent = useragent;
-            return this;
-        }
-        public GetHeader setReferer(string referer)
-        {
-            this.Referer = referer;
-            return this;
-        }
-        public GetHeader setAcceptEncoding(string acceptencoding)
-        {
-            this.AcceptEncoding = acceptencoding;
-            return this;
-        }
-        public GetHeader setAcceptLanguage(string acceptlanguage)
-        {
-            this.AcceptLanguage = acceptlanguage;
-            return this;
-        }
-        public GetHeader setOrigin(string origin)
-        {
-            this.Origin = origin;
-            return this;
-        }
-    }
-    public class PostHeader
+    public class Header
     {
         public string Host;
         public bool Connection = true;
@@ -69,53 +17,42 @@ namespace LobiAPI.HttpAPI.Header
         public string AcceptLanguage;
         public string Origin;
         public string ContentType;
-
-        public PostHeader setHost(string host)
-        {
+        
+        public Header setHost(string host){
             this.Host = host;
             return this;
         }
-        public PostHeader setConnection(bool connection)
-        {
+        public Header setConnection(bool connection){
             this.Connection = connection;
             return this;
         }
-        public PostHeader setAccept(string accept)
-        {
+        public Header setAccept(string accept){
             this.Accept = accept;
             return this;
         }
-        public PostHeader setUserAgent(string useragent)
-        {
+        public Header setUserAgent(string useragent){
             this.UserAgent = useragent;
             return this;
         }
-        public PostHeader setReferer(string referer)
-        {
+        public Header setReferer(string referer){
             this.Referer = referer;
             return this;
         }
-        public PostHeader setAcceptEncoding(string acceptencoding)
-        {
-            this.AcceptEncoding = acceptencoding;
+        public Header setAcceptEncoding(string encoding){
+            this.AcceptEncoding = encoding;
             return this;
         }
-        public PostHeader setAcceptLanguage(string acceptlanguage)
-        {
-            this.AcceptLanguage = acceptlanguage;
+        public Header setAcceptLanguage(string lang){
+            this.AcceptLanguage = lang;
             return this;
         }
-        public PostHeader setOrigin(string origin)
-        {
+        public Header setOrigin(string origin){
             this.Origin = origin;
             return this;
         }
-
-        public PostHeader setContentType(string contenttype)
-        {
+        public Header setContentType(string contenttype){
             this.ContentType = contenttype;
             return this;
         }
-
     }
 }
