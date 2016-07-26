@@ -7,8 +7,6 @@ using System.Net;
 using System.Net.Http;
 using System.IO;
 
-using LobiAPI.HttpAPI.Header;
-
 namespace LobiAPI.HttpAPI
 {
     public class Http
