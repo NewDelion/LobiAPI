@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 using LobiAPI.HttpAPI;
 using LobiAPI.Json;
@@ -16,48 +17,48 @@ namespace LobiAPI
     public class BasicAPI
     {
         private Http NetworkAPI = null;
-        private HttpRequestHeader GetHeader = null;
-        private HttpRequestHeader PostHeader = null;
+        private HttpRequestMessage Header = null;
 
         public BasicAPI()
         {
             NetworkAPI = new Http();
-            
-            GetHeader = new HttpRequestHeader();
-            GetHeader.Host = "lobi.co";
-            GetHeader.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"));
-            GetHeader.UserAgent.Add(new ProductInfoHeaderValue("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36"));
-            GetHeader.AcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
-            
-            PostHeader = new HttpRequestHeader();
-            PostHeader.Host = "lobi.co";
-            PostHeader.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"));
-            PostHeader.UserAgent.Add(new ProductInfoHeaderValue("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36"));
-            PostHeader.AcceptLanguage("ja,en-US;q=0.8,en;q=0.6");
+
+            Header = new HttpRequestMessage();
+            Header.Headers.Host = "lobi.co";
+            Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+            Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xhtml+xml"));
+            Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+            Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+            Header.Headers.UserAgent.Add(new ProductInfoHeaderValue("Mozilla", "5.0"));
+            Header.Headers.UserAgent.Add(new ProductInfoHeaderValue("AppleWebKit", "537.36"));
+            Header.Headers.UserAgent.Add(new ProductInfoHeaderValue("Chrome", "49.0.2623.110"));
+            Header.Headers.UserAgent.Add(new ProductInfoHeaderValue("Safari", "537.36"));
+            Header.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue("ja"));
+            Header.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US"));
             
         }
 
         public async Task<bool> Login(string mail, string password)
         {
-            string source = await this.NetworkAPI.get("https://lobi.co/signin", GetHeader);
+            string source = await this.NetworkAPI.get("https://lobi.co/signin", Header);
             string csrf_token = Pattern.get_string(source, Pattern.csrf_token, "\"");
             FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
                { "csrf_token", csrf_token },
                { "email", mail },
                { "password", password }
             });
-            string source2 = await this.NetworkAPI.post_x_www_form_urlencoded("https://lobi.co/signin", post_data, PostHeader);
+            string source2 = await this.NetworkAPI.post_x_www_form_urlencoded("https://lobi.co/signin", post_data, Header);
             bool result = source2.IndexOf("ログインに失敗しました") == -1;
             if(result){
-                GetHeader.Host = "web.lobi.co";
-                PostHeader.Host = "web.lobi.co";
+                Header.Headers.Host = "web.lobi.co";
+                Header.Headers.Host = "web.lobi.co";
             }
             return result;
         }
 
         public async Task<bool> TwitterLogin(string mail, string password)
         {
-            string source = await this.NetworkAPI.get("https://lobi.co/signup/twitter", GetHeader);
+            string source = await this.NetworkAPI.get("https://lobi.co/signup/twitter", Header);
             string authenticity_token = Pattern.get_string(source, Pattern.authenticity_token, "\"");
             string redirect_after_login = Pattern.get_string(source, Pattern.redirect_after_login, "\"");
             string oauth_token = Pattern.get_string(source, Pattern.oauth_token, "\"");
@@ -68,32 +69,35 @@ namespace LobiAPI
                { "session[username_or_email]", mail },
                { "session[password]", password }
             });
-            PostHeader.Host = "api.twitter.com";
-            string source2 = await this.NetworkAPI.post_x_www_form_urlencoded("https://api.twitter.com/oauth/authorize", post_data, PostHeader);
+            Header.Headers.Host = "api.twitter.com";
+            string source2 = await this.NetworkAPI.post_x_www_form_urlencoded("https://api.twitter.com/oauth/authorize", post_data, Header);
             if (source2.IndexOf("Twitterにログイン") > -1)
                 return false;
-            string source3 = this.NetworkAPI.get(Pattern.get_string(source2, Pattern.twitter_redirect_to_lobi, "\""), GetHeader);
+            string source3 = await this.NetworkAPI.get(Pattern.get_string(source2, Pattern.twitter_redirect_to_lobi, "\""), Header);
             bool result = source3.IndexOf("ログインに失敗しました") == -1;
             if(result){
-                GetHeader.Host = "web.lobi.co";
-                PostHeader.Host = "web.lobi.co";
+                Header.Headers.Host = "web.lobi.co";
+                Header.Headers.Accept.Clear();
+                Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
+                Header.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
             }
             return result;
         }
 
-        public Me GetMe()
+        public async Task<Me> GetMe()
         {
-            return JsonConvert.DeserializeObject<Me>(this.NetworkAPI.get("https://web.lobi.co/api/me?fields=premium", GetHeader));
+            return JsonConvert.DeserializeObject<Me>(await this.NetworkAPI.get("https://web.lobi.co/api/me?fields=premium", Header));
         }
 
-        public PublicGroups[] GetPublicGroupList()
+        public async Task<PublicGroups[]> GetPublicGroupList()
         {
             List<PublicGroups> result = new List<PublicGroups>();
 
             int index = 1;
             while (true)
             {
-                PublicGroups[] pg = JsonConvert.DeserializeObject<PublicGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/public_groups?count=1000&page=" + index.ToString() + "&with_archived=1", GetHeader));
+                PublicGroups[] pg = JsonConvert.DeserializeObject<PublicGroups[]>(await this.NetworkAPI.get("https://web.lobi.co/api/public_groups?count=1000&page=" + index.ToString() + "&with_archived=1", Header));
                 index++;
                 if (pg[0].items.Length == 0)
                     break;
@@ -103,13 +107,13 @@ namespace LobiAPI
             return result.ToArray();
         }
 
-        public PrivateGroups[] GetPrivateGroupList()
+        public async Task<PrivateGroups[]> GetPrivateGroupList()
         {
             List<PrivateGroups> result = new List<PrivateGroups>();
             int index = 1;
             while (true)
             {
-                PrivateGroups[] pg = JsonConvert.DeserializeObject<PrivateGroups[]>(this.NetworkAPI.get("https://web.lobi.co/api/groups?count=1000&page=" + index.ToString(), GetHeader));
+                PrivateGroups[] pg = JsonConvert.DeserializeObject<PrivateGroups[]>(await this.NetworkAPI.get("https://web.lobi.co/api/groups?count=1000&page=" + index.ToString(), Header));
                 index++;
                 if (pg[0].items.Length == 0)
                     break;
@@ -119,40 +123,40 @@ namespace LobiAPI
             return result.ToArray();
         }
 
-        public Notifications GetNotifications()
+        public async Task<Notifications> GetNotifications()
         {
-            return JsonConvert.DeserializeObject<Notifications>(this.NetworkAPI.get("https://web.lobi.co/api/info/notifications?platform=any&last_cursor=0", GetHeader));
+            return JsonConvert.DeserializeObject<Notifications>(await this.NetworkAPI.get("https://web.lobi.co/api/info/notifications?platform=any&last_cursor=0", Header));
         }
 
-        public Contacts GetContacts(string uid)
+        public async Task<Contacts> GetContacts(string uid)
         {
-            return JsonConvert.DeserializeObject<Contacts>(this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/contacts", GetHeader));
+            return JsonConvert.DeserializeObject<Contacts>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/contacts", Header));
         }
 
-        public Followers GetFollowers(string uid)
+        public async Task<Followers> GetFollowers(string uid)
         {
-            return JsonConvert.DeserializeObject<Followers>(this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/followers", GetHeader));
+            return JsonConvert.DeserializeObject<Followers>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/followers", Header));
         }
 
-        public Group GetGroup(string uid)
+        public async Task<Group> GetGroup(string uid)
         {
-            return JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", GetHeader));
+            return JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", Header));
         }
 
-        public int GetGroupMembersCount(string uid)
+        public async Task<int> GetGroupMembersCount(string uid)
         {
-            int? result =JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/"+uid, GetHeader)).members_count;
+            int? result =JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/"+uid, Header)).members_count;
             return result == null ? 0 : (int)result;
         }
 
-        public User[] GetGroupMembers(string uid)
+        public async Task<User[]> GetGroupMembers(string uid)
         {
             List<User> result = new List<User>();
             string next = "0";
             int limit = 10000;
             while (limit-- > 0)
             {
-                Group g = JsonConvert.DeserializeObject<Group>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?members_cursor=" + next, GetHeader));
+                Group g = JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?members_cursor=" + next, Header));
                 result.AddRange(g.members);
                 if (g.members_next_cursor == 0)
                     break;
@@ -162,83 +166,111 @@ namespace LobiAPI
             return result.ToArray();
         }
 
-        public Chat[] GetThreads(string uid, int count = 20)
+        public async Task<Chat[]> GetThreads(string uid, int count = 20)
         {
-            return JsonConvert.DeserializeObject<Chat[]>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), GetHeader));
+            return JsonConvert.DeserializeObject<Chat[]>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), Header));
         }
 
-        public Pokes GetPokes(string group_id, string chat_id)
+        public async Task<Pokes> GetPokes(string group_id, string chat_id)
         {
-            return JsonConvert.DeserializeObject<Pokes>(this.NetworkAPI.get("https://web.lobi.co/api/group/" + group_id + "/chats/pokes?id=" + chat_id, GetHeader));
+            return JsonConvert.DeserializeObject<Pokes>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + group_id + "/chats/pokes?id=" + chat_id, Header));
         }
 
-        public Bookmarks GetBookmarks()
+        public async Task<Bookmarks> GetBookmarks()
         {
-            return JsonConvert.DeserializeObject<Bookmarks>(this.NetworkAPI.get("https://web.lobi.co/api/me/bookmarks", GetHeader));
+            return JsonConvert.DeserializeObject<Bookmarks>(await this.NetworkAPI.get("https://web.lobi.co/api/me/bookmarks", Header));
         }
 
-        public void Goo(string group_id, string chat_id)
+        public async void Goo(string group_id, string chat_id)
         {
-            List<string> data = new List<string>();
-            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n"+chat_id);
-
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/like", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "id", chat_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats/like", post_data, Header);
         }
 
-        public void UnGoo(string group_id, string chat_id)
+        public async void UnGoo(string group_id, string chat_id)
         {
-            List<string> data = new List<string>();
-            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
-
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "id", chat_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats/unlike", post_data, Header);
         }
 
-        public void Boo(string group_id, string chat_id)
+        public async void Boo(string group_id, string chat_id)
         {
-            List<string> data = new List<string>();
-            data.Add("Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id);
-
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/boo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "id", chat_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats/boo", post_data, Header);
         }
 
-        public void UnBoo(string group_id, string chat_id)
+        public async void UnBoo(string group_id, string chat_id)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats/unboo", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"id\"\r\n\r\n" + chat_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "id", chat_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats/unboo", post_data, Header);
         }
 
-        public void Follow(string user_id)
+        public async void Follow(string user_id)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/me/contacts", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"users\"\r\n\r\n" + user_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "users", user_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/me/contacts", post_data, Header);
         }
 
-        public void UnFollow(string user_id)
+        public async void UnFollow(string user_id)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/me/contacts/remove", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"users\"\r\n\r\n" + user_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "users", user_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/me/contacts/remove", post_data, Header);
         }
 
-        public void MakeThread(string group_id, string message, bool shout = false)
+        public async void MakeThread(string group_id, string message, bool shout = false)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"type\"\r\n\r\n" + (shout ? "shout" : "normal"), "Content-Disposition: form-data; name=\"lang\"\r\n\r\nja", "Content-Disposition: form-data; name=\"message\"\r\n\r\n" + message }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "type", shout ? "shout" : "normal" },
+               { "lang", "ja" },
+               { "message", message }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
         }
 
-        public void Reply(string group_id, string thread_id, string message)
+        public async void Reply(string group_id, string thread_id, string message)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/group/" + group_id + "/chats", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"type\"\r\n\r\nnormal", "Content-Disposition: form-data; name=\"lang\"\r\n\r\nja", "Content-Disposition: form-data; name=\"message\"\r\n\r\n" + message, "Content-Disposition: form-data; name=\"reply_to\"\r\n\r\n" + thread_id }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "type", "normal" },
+               { "lang", "ja" },
+               { "message", message },
+               { "reply_to", thread_id }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
         }
 
-        public void RemoveGroup(string group_id)
+        public async void RemoveGroup(string group_id)
         {
-            this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/remove", "", PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>());
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/remove", post_data, Header);
         }
 
-        public MakePrivateGroupResult MakePrivateGroup(string user_id)
+        public async Task<MakePrivateGroupResult> MakePrivateGroup(string user_id)
         {
-            return JsonConvert.DeserializeObject<MakePrivateGroupResult>(this.NetworkAPI.post_form_data("https://web.lobi.co/api/groups/1on1s", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"user\"\r\n\r\n" + user_id }, PostHeader));
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "user", user_id }
+            });
+            return JsonConvert.DeserializeObject<MakePrivateGroupResult>(await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/groups/1on1s", post_data, Header));
         }
 
-        public void ChangeProfile(string name, string description)
+        public async void ChangeProfile(string name, string description)
         {
-            this.NetworkAPI.post_form_data("https://web.lobi.co/api/me/profile", "----WebKitFormBoundary" + Guid.NewGuid().ToString("N").Substring(0, 16), new string[] { "Content-Disposition: form-data; name=\"name\"\r\n\r\n" + name, "Content-Disposition: form-data; name=\"description\"\r\n\r\n" + description }, PostHeader);
+            FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
+               { "name", name },
+               { "description", description }
+            });
+            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/me/profile", post_data, Header);
         }
 
         private class Pattern
