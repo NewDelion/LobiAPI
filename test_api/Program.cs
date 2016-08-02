@@ -26,10 +26,16 @@ login:      Console.Write("Mail: ");
             }
 
             LobiAPI.Json.Me me = api.GetMe().Result;
-            
-            /*LobiAPI.Json.PublicGroups[] PublicGroups = api.GetPublicGroupList();
-            LobiAPI.Json.PrivateGroups[] PrivateGroups = api.GetPrivateGroupList();
-            LobiAPI.Json.Notifications Notifications = api.GetNotifications();
+
+            var TaskPublicGroups = api.GetPublicGroupList();
+            TaskPublicGroups.Wait();
+            var TaskPrivateGroups = api.GetPrivateGroupList();
+            TaskPrivateGroups.Wait();
+
+            LobiAPI.Json.PublicGroups[] PublicGroups = TaskPublicGroups.Result;
+            LobiAPI.Json.PrivateGroups[] PrivateGroups = TaskPrivateGroups.Result;
+
+            /*LobiAPI.Json.Notifications Notifications = api.GetNotifications();
             LobiAPI.Json.Followers Followers = api.GetFollowers(me.uid);
             LobiAPI.Json.Contacts Contacts = api.GetContacts(me.uid);
             LobiAPI.Json.Group Group = api.GetGroup(PublicGroups[0].items[0].uid);
