@@ -17,8 +17,6 @@ namespace LobiAPI.Json
         public string public_groups_next_cursor { get; set; }
         public object[] uesrs { get; set; }
         public int? users_next_cursor { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
     }
 
     public class MePublicGroupsItem
