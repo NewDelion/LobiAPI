@@ -60,6 +60,7 @@
     <Compile Include="Json\Pokes.cs" />
     <Compile Include="Json\PrivateGroups.cs" />
     <Compile Include="Json\PublicGroups.cs" />
+    <Compile Include="Json\Replies.cs" />
     <Compile Include="Json\Reply.cs" />
     <Compile Include="Json\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

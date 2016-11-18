@@ -36,9 +36,7 @@ namespace LobiAPI.HttpAPI
                         client.DefaultRequestHeaders.AcceptLanguage.Add(lang);
                 handler.CookieContainer = this.cookie;
                 var response = await client.GetAsync(url);
-                if(response.StatusCode == HttpStatusCode.OK){
-                    result = await response.Content.ReadAsStringAsync();
-                }
+                result = await response.Content.ReadAsStringAsync();
             }
             return result;
         }
@@ -65,9 +63,7 @@ namespace LobiAPI.HttpAPI
                         client.DefaultRequestHeaders.AcceptLanguage.Add(lang);
                 handler.CookieContainer = this.cookie;
                 var response = await client.PostAsync(url, content);
-                if(response.StatusCode == HttpStatusCode.OK){
-                    result = await response.Content.ReadAsStringAsync();
-                }
+                result = await response.Content.ReadAsStringAsync();
             }
             return result;
         }

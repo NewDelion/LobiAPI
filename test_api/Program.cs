@@ -34,7 +34,7 @@ login:      Console.Write("Mail: ");
 
             LobiAPI.Json.PublicGroups[] PublicGroups = TaskPublicGroups.Result;
             LobiAPI.Json.PrivateGroups[] PrivateGroups = TaskPrivateGroups.Result;
-
+            
             /*LobiAPI.Json.Notifications Notifications = api.GetNotifications();
             LobiAPI.Json.Followers Followers = api.GetFollowers(me.uid);
             LobiAPI.Json.Contacts Contacts = api.GetContacts(me.uid);

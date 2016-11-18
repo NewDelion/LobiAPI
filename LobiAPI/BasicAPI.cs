@@ -128,35 +128,35 @@ namespace LobiAPI
             return JsonConvert.DeserializeObject<Notifications>(await this.NetworkAPI.get("https://web.lobi.co/api/info/notifications?platform=any&last_cursor=0", Header));
         }
 
-        public async Task<Contacts> GetContacts(string uid)
+        public async Task<Contacts> GetContacts(string user_id)
         {
-            return JsonConvert.DeserializeObject<Contacts>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/contacts", Header));
+            return JsonConvert.DeserializeObject<Contacts>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + user_id + "/contacts", Header));
         }
 
-        public async Task<Followers> GetFollowers(string uid)
+        public async Task<Followers> GetFollowers(string user_id)
         {
-            return JsonConvert.DeserializeObject<Followers>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + uid + "/followers", Header));
+            return JsonConvert.DeserializeObject<Followers>(await this.NetworkAPI.get("https://web.lobi.co/api/user/" + user_id + "/followers", Header));
         }
 
-        public async Task<Group> GetGroup(string uid)
+        public async Task<Group> GetGroup(string group_id)
         {
-            return JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", Header));
+            return JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + group_id + "?error_flavor=json2&fields=group_bookmark_info%2Capp_events_info", Header));
         }
 
-        public async Task<int> GetGroupMembersCount(string uid)
+        public async Task<int> GetGroupMembersCount(string group_id)
         {
-            int? result =JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/"+uid, Header)).members_count;
+            int? result =JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/"+ group_id, Header)).members_count;
             return result == null ? 0 : (int)result;
         }
 
-        public async Task<User[]> GetGroupMembers(string uid)
+        public async Task<User[]> GetGroupMembers(string group_id)
         {
             List<User> result = new List<User>();
             string next = "0";
             int limit = 10000;
             while (limit-- > 0)
             {
-                Group g = JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "?members_cursor=" + next, Header));
+                Group g = JsonConvert.DeserializeObject<Group>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + group_id + "?members_cursor=" + next, Header));
                 result.AddRange(g.members);
                 if (g.members_next_cursor == 0)
                     break;
@@ -166,9 +166,14 @@ namespace LobiAPI
             return result.ToArray();
         }
 
-        public async Task<Chat[]> GetThreads(string uid, int count = 20)
+        public async Task<Chat[]> GetThreads(string group_id, int count = 20, string older_than = "")
         {
-            return JsonConvert.DeserializeObject<Chat[]>(await this.NetworkAPI.get("https://web.lobi.co/api/group/" + uid + "/chats?count=" + count.ToString(), Header));
+            return JsonConvert.DeserializeObject<Chat[]>(await this.NetworkAPI.get(string.Format("https://web.lobi.co/api/group/{0}/chats?count={1}&older_than={2}", group_id, count, older_than), Header));
+        }
+
+        public async Task<Replies> GetRepliesAll(string group_id, string chat_id)
+        {
+            return JsonConvert.DeserializeObject<Replies>(await this.NetworkAPI.get(string.Format("https://web.lobi.co/api/group/{0}/chats/replies?to={1}", group_id, chat_id), Header));
         }
 
         public async Task<Pokes> GetPokes(string group_id, string chat_id)
@@ -229,17 +234,19 @@ namespace LobiAPI
             await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/me/contacts/remove", post_data, Header);
         }
 
-        public async void MakeThread(string group_id, string message, bool shout = false)
+        public async Task<object> MakeThread(string group_id, string message, bool shout = false)
         {
             FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
                { "type", shout ? "shout" : "normal" },
                { "lang", "ja" },
                { "message", message }
             });
-            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
+            string result = await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
+            try { return JsonConvert.DeserializeObject<Chat>(result); }
+            catch { return result; }
         }
 
-        public async void Reply(string group_id, string thread_id, string message)
+        public async Task<object> Reply(string group_id, string thread_id, string message)
         {
             FormUrlEncodedContent post_data = new FormUrlEncodedContent(new Dictionary<string, string>{
                { "type", "normal" },
@@ -247,7 +254,9 @@ namespace LobiAPI
                { "message", message },
                { "reply_to", thread_id }
             });
-            await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
+            string result = await this.NetworkAPI.post_x_www_form_urlencoded("https://web.lobi.co/api/group/" + group_id + "/chats", post_data, Header);
+            try { return JsonConvert.DeserializeObject<Chat>(result); }
+            catch { return result; }
         }
 
         public async void RemoveGroup(string group_id)

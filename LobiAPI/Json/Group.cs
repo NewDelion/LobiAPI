@@ -22,7 +22,7 @@ namespace LobiAPI.Json
         public User[] members { get; set; }
         public int? members_count { get; set; }
         public int? members_next_cursor { get; set; }
-        public string last_chat_at { get; set; }
+        public long? last_chat_at { get; set; }
         public string name { get; set; }
         public object[] needs_to_join { get; set; }
         public string now { get; set; }
